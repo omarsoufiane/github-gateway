@@ -75,7 +75,7 @@ app.get('/orgs/:org/', async (req: Request, res: Response) => {
         res.status(404).json({error: 'Organisation not found'})
       }
       if (error.response.status == 401){
-        res.status(404).json({error: 'Unauthorized 401'})
+        res.status(401).json({error: 'Unauthorized 401'})
       }
       res.status(500).json({ error: 'Internal Server Error' });
     }
