@@ -18,11 +18,22 @@ type RepoType = {
   pullRequests: object[],
   issues: [],
 }
-
+  async getRepositoryByFullName(fullName: string): Promise<any> {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .get<any>(`https://api.github.com/repos/${fullName}`)
+        .pipe(
+          catchError((error: Error) => {
+            console.log(error);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+    return data;
 app.get('/orgs/:org/', async (req: Request, res: Response) => {
     const { org } = req.params;
     try {
-
+      
       const  response = await axios.get(`https://api.github.com/orgs/${org}/repos?sort=updated&direction=desc&per_page=5`);
       const repositories = response.data;
     
@@ -65,6 +76,18 @@ app.get('/orgs/:org/', async (req: Request, res: Response) => {
           return repoDetails;
         });
       });
+
+      async getPullRequest(url: string): Promise<any> {
+          const { data } = await firstValueFrom(
+            this.httpService.get<any>(url).pipe(
+              catchError((error: Error) => {
+                console.log(error);
+                throw 'An error happened!';
+              }),
+            ),
+          );
+          return data;
+      }
 
       const repodetails = await Promise.all(detailsPromises); 
 
