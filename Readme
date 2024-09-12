@@ -1,3 +1,4 @@
+[![Bounties on BountyHub](https://img.shields.io/badge/Bounties-on%20BountyHub-yellow)]( https://bountyhub.dev?repo=omarsoufiane/github-gateway)
 # GitHub API Backend
 
 This project is a backend micro-service that makes calls to GitHub organizations and get their last repositories with issues and pull requests 
