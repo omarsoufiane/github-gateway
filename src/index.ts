@@ -18,18 +18,6 @@ type RepoType = {
   pullRequests: object[],
   issues: [],
 }
-  async getRepositoryByFullName(fullName: string): Promise<any> {
-    const { data } = await firstValueFrom(
-      this.httpService
-        .get<any>(`https://api.github.com/repos/${fullName}`)
-        .pipe(
-          catchError((error: Error) => {
-            console.log(error);
-            throw 'An error happened!';
-          }),
-        ),
-    );
-    return data;
 app.get('/orgs/:org/', async (req: Request, res: Response) => {
     const { org } = req.params;
     try {
@@ -54,16 +42,6 @@ app.get('/orgs/:org/', async (req: Request, res: Response) => {
         const issuesPromise = axios.get(`${repo.url}/issues?per_page=5`);
     
         return Promise.all([prPromise, issuesPromise]).then(async ([pullRequests, issues] : any) => {
-
-          let commitsPromises = pullRequests.data.map(async(pr: any)=> {
-            return axios.get(pr.commits_url).then((response:any)=> {
-              return {
-                title: pr.title,
-                commits: response.data
-              }
-            })
-          })
-
           repoDetails.pullRequests =await Promise.all(commitsPromises);
           repoDetails.issues = issues.data.map((issue:any)=> issue.title);
 
