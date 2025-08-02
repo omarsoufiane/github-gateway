@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
 
@@ -42,7 +42,7 @@ app.get('/orgs/:org/', async (req: Request, res: Response) => {
         const issuesPromise = axios.get(`${repo.url}/issues?per_page=5`);
     
         return Promise.all([prPromise, issuesPromise]).then(async ([pullRequests, issues] : any) => {
-          repoDetails.pullRequests =await Promise.all(commitsPromises);
+          repoDetails.pullRequests = pullRequests.data;
           repoDetails.issues = issues.data.map((issue:any)=> issue.title);
 
           //caching response
@@ -55,30 +55,32 @@ app.get('/orgs/:org/', async (req: Request, res: Response) => {
         });
       });
 
-      async getPullRequest(url: string): Promise<any> {
-          const { data } = await firstValueFrom(
-            this.httpService.get<any>(url).pipe(
-              catchError((error: Error) => {
-                console.log(error);
-                throw 'An error happened!';
-              }),
-            ),
-          );
-          return data;
-      }
+      // async getPullRequest(url: string): Promise<any> {
+      //     const { data } = await firstValueFrom(
+      //       this.httpService.get<any>(url).pipe(
+      //         catchError((error: Error) => {
+      //           console.log(error);
+      //           throw 'An error happened!';
+      //         }),
+      //       ),
+      //     );
+      //     return data;
+      // }
 
       const repodetails = await Promise.all(detailsPromises); 
 
       res.json(repodetails);
     } catch (error: any) {
       console.error(error);
-      if (error.response.status == 404){
+      if (error.response?.status === 404){
         res.status(404).json({error: 'Organisation not found'})
       }
-      if (error.response.status == 401){
+      else if (error.response?.status === 401){
         res.status(401).json({error: 'Unauthorized 401'})
       }
-      res.status(500).json({ error: 'Internal Server Error' });
+      else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
     }
   });
 
